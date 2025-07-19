@@ -1,0 +1,6 @@
+projectKey=ditto
+serverUrl=http://localhost:9000
+serverVersion=25.7.0.110598
+dashboardUrl=http://localhost:9000/dashboard?id=ditto
+ceTaskId=527603a5-1d92-491d-9ff9-bbbb83e3d97c
+ceTaskUrl=http://localhost:9000/api/ce/task?id=527603a5-1d92-491d-9ff9-bbbb83e3d97c

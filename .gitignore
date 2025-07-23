@@ -26,6 +26,5 @@ ui/node_modules
 ui/dist
 
 # SonarCloud configuration files
-sonar-project.properties
 extract_sonar_issues.py 
 .scannerwork/

@@ -31,7 +31,6 @@
 #         run: mvn verify sonar:sonar -Dsonar.projectKey=Maheenrz_eclipse-ditto -Dsonar.organization=maheenrz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
 
-
 name: SonarCloud Analysis
 
 on:
@@ -41,8 +40,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build and Analyze (SonarCloud)
+  sonar:
+    name: Analyze with SonarCloud (No Tests)
     runs-on: ubuntu-latest
 
     steps:
@@ -63,7 +62,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Build and analyze with SonarCloud (skip tests)
-        run: mvn clean install -Dmaven.test.skip=true sonar:sonar -Dsonar.branch.name=release-3.7
+      - name: Skip test modules (disable profiles and test builds)
+        run: |
+          mvn clean install -DskipTests -pl '!org.eclipse.ditto:ditto-json:tests' sonar:sonar -Dsonar.branch.name=release-3.7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

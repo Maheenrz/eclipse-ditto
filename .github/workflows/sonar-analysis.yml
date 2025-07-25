@@ -1,67 +1,38 @@
-# name: SonarCloud Analysis
-
-# on:
-#   push:
-#     branches:
-#       - release-3.7
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-
-#       - name: Set up JDK 21
-#         uses: actions/setup-java@v3
-#         with:
-#           distribution: 'temurin'
-#           java-version: '21'
-
-#       - name: Cache SonarCloud packages
-#         uses: actions/cache@v3
-#         with:
-#           path: ~/.sonar/cache
-#           key: ${{ runner.os }}-sonar
-#           restore-keys: ${{ runner.os }}-sonar
-
-
-#       - name: SonarCloud Scan
-#         env:
-#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#         run: mvn verify sonar:sonar -Dsonar.projectKey=Maheenrz_eclipse-ditto -Dsonar.organization=maheenrz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
-name: SonarCloud Analysis
+name: SonarCloud Analysis (CLI)
 
 on:
-  push:
-    branches:
-      - release-3.7
   workflow_dispatch:
 
 jobs:
   sonar:
-    name: Analyze with SonarCloud (No Tests)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up JDK
+      - name: Set up Java 21
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      - name: Install SonarScanner CLI
+        run: |
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonar-scanner.zip -d $HOME
+          echo "$HOME/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
 
-      - name: Run SonarCloud analysis (skip tests)
-        run: mvn clean verify sonar:sonar -DskipTests -Dsonar.branch.name=release-3.7
+      - name: Run SonarCloud analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=Maheenrz_eclipse-ditto \
+            -Dsonar.organization=maheenrz \
+            -Dsonar.sources=. \
+            -Dsonar.java.source=21 \
+            -Dsonar.maven.projectVersion=3.7 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.branch.name=release-3.7

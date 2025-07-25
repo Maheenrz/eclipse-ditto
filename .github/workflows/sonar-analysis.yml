@@ -30,7 +30,6 @@
 #           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #         run: mvn verify sonar:sonar -Dsonar.projectKey=Maheenrz_eclipse-ditto -Dsonar.organization=maheenrz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
-
 name: SonarCloud Analysis
 
 on:
@@ -62,8 +61,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Skip test modules (disable profiles and test builds)
-        run: |
-          mvn clean install -DskipTests -pl '!org.eclipse.ditto:ditto-json:tests' sonar:sonar -Dsonar.branch.name=release-3.7
+      - name: Run SonarCloud analysis (skip tests)
+        run: mvn clean verify sonar:sonar -DskipTests -Dsonar.branch.name=release-3.7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
